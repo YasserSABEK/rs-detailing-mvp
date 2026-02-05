@@ -95,7 +95,7 @@ export default function EmployeeLogin() {
                 <div className="mb-10 text-center">
                     <div className="relative mx-auto mb-4 h-16 w-48">
                         <Image
-                            src="/logo.png"
+                            src="/logo-v2.png"
                             alt="RS Detailing"
                             fill
                             className="object-contain"

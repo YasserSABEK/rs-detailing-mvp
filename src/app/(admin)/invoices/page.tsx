@@ -221,7 +221,7 @@ export default function InvoicesPage() {
                                         <p style={{ color: '#666', fontSize: '14px' }}>أم البواقي - بجانب وقف السبتي</p>
                                     </div>
                                     <div className="logo">
-                                        <img src="/logo.png" alt="RS Detailing" style={{ width: '120px', height: 'auto' }} />
+                                        <img src="/logo-v2.png" alt="RS Detailing" style={{ width: '120px', height: 'auto' }} />
                                     </div>
                                 </div>
 

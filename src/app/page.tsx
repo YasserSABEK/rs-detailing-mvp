@@ -30,7 +30,7 @@ export default function Home() {
                 <div className="container mx-auto flex h-20 items-center justify-between px-6">
                     <div className="relative h-12 w-48">
                         <Image
-                            src="/logo.png"
+                            src="/logo-v2.png"
                             alt="RS Detailing Logo"
                             fill
                             className="object-contain object-left"
