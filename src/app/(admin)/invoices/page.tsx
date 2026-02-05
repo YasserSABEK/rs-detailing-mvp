@@ -278,7 +278,7 @@ export default function InvoicesPage() {
 
                         {/* Visual Preview (Visible to User) */}
                         <div className="border border-gray-200 rounded-lg p-6 mb-6 bg-gray-50 flex flex-col items-center justify-center text-center">
-                            <img src="/logo.png" alt="Logo" className="h-16 mb-4" />
+                            <img src="/logo-v2.png" alt="Logo" className="h-16 mb-4" />
                             <h2 className="text-xl font-bold mb-2">معاينة الفاتورة</h2>
                             <p className="text-gray-500 mb-4">{formatInvoiceId(selectedInvoice.id)}</p>
                             <p className="font-bold text-2xl text-brand-red">{selectedInvoice.total_price.toLocaleString()} DA</p>

@@ -28,12 +28,12 @@ export default function Home() {
             {/* Navigation */}
             <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-md">
                 <div className="container mx-auto flex h-20 items-center justify-between px-6">
-                    <div className="relative h-12 w-48">
+                    <div className="relative h-12 w-40 md:h-14 md:w-48">
                         <Image
                             src="/logo-v2.png"
                             alt="RS Detailing Logo"
                             fill
-                            className="object-contain object-left"
+                            className="object-contain object-right"
                             priority
                         />
                     </div>
