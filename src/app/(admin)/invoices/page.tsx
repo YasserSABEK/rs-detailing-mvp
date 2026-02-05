@@ -71,42 +71,50 @@ export default function InvoicesPage() {
         if (printRef.current) {
             const printContent = printRef.current.innerHTML;
             const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+            // Get current origin for images
+            const origin = window.location.origin;
+            const contentWithImages = printContent.replace(/src="\/logo.png"/g, `src="${origin}/logo.png"`);
+
             if (printWindow) {
                 printWindow.document.write(`
                     <!DOCTYPE html>
                     <html dir="rtl" lang="ar">
                     <head>
                         <meta charset="UTF-8">
-                        <title>فاتورة RS Detailing</title>
+                        <title>فاتورة ${selectedInvoice?.id || 'RS Detailing'}</title>
                         <style>
-                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+                            * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
                             body { 
-                                font-family: 'Arial', sans-serif; 
-                                padding: 40px;
+                                padding: 0;
                                 direction: rtl;
+                                background: white;
                             }
-                            .invoice { max-width: 600px; margin: 0 auto; }
-                            .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #000; padding-bottom: 20px; }
-                            .header h1 { font-size: 32px; letter-spacing: 4px; margin-bottom: 5px; }
-                            .header p { font-size: 14px; color: #666; }
-                            .info { margin-bottom: 30px; }
-                            .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ccc; }
-                            .info-row span:first-child { font-weight: bold; }
-                            .services { margin: 30px 0; }
-                            .services h3 { margin-bottom: 15px; font-size: 18px; }
-                            .service-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-                            .total { margin-top: 30px; padding: 20px; background: #f5f5f5; border-radius: 8px; }
-                            .total-row { display: flex; justify-content: space-between; font-size: 24px; font-weight: bold; }
-                            .footer { margin-top: 40px; text-align: center; font-size: 14px; color: #666; }
+                            .print-container {
+                                width: 100%;
+                                max-width: 800px;
+                                margin: 0 auto;
+                                padding: 40px;
+                            }
                             @media print {
-                                body { padding: 20px; }
-                                @page { size: A4; margin: 15mm; }
+                                body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                                .print-container { width: 100%; max-width: none; padding: 20px; }
+                                @page { size: A4; margin: 0; }
                             }
                         </style>
                     </head>
                     <body>
-                        ${printContent}
-                        <script>window.onload = function() { window.print(); window.close(); }</script>
+                        ${contentWithImages}
+                        <script>
+                            window.onload = function() {
+                                // Wait for image to load before printing
+                                setTimeout(() => {
+                                    window.print();
+                                    window.close();
+                                }, 500);
+                            }
+                        </script>
                     </body>
                     </html>
                 `);
@@ -203,63 +211,77 @@ export default function InvoicesPage() {
                         </button>
 
                         {/* Invoice Content (for printing) */}
-                        <div ref={printRef} className="invoice">
-                            <div className="header">
-                                <h1>RS DETAILING</h1>
-                                <p>Lavage & Esthétique Auto</p>
-                                <p style={{ marginTop: '10px' }}>أم البواقي - بجانب وقف السبتي</p>
-                            </div>
-
-                            <div className="info">
-                                <div className="info-row">
-                                    <span>رقم الفاتورة:</span>
-                                    <span>{formatInvoiceId(selectedInvoice.id)}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span>التاريخ:</span>
-                                    <span>{formatDate(selectedInvoice.created_at)}</span>
-                                </div>
-                                {selectedInvoice.car && (
-                                    <>
-                                        <div className="info-row">
-                                            <span>السيارة:</span>
-                                            <span>{selectedInvoice.car.make} {selectedInvoice.car.model}</span>
-                                        </div>
-                                        <div className="info-row">
-                                            <span>رقم اللوحة:</span>
-                                            <span>{selectedInvoice.car.plate_number || '-'}</span>
-                                        </div>
-                                    </>
-                                )}
-                                {selectedInvoice.customer && (
-                                    <div className="info-row">
-                                        <span>الزبون:</span>
-                                        <span>{selectedInvoice.customer.full_name || selectedInvoice.customer.phone}</span>
+                        <div ref={printRef} className="invoice bg-white hidden">
+                            {/* This is hidden for user but used for print HTML generation */}
+                            <div className="print-container">
+                                <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '2px solid #eee', paddingBottom: '20px' }}>
+                                    <div className="company-info" style={{ textAlign: 'right' }}>
+                                        <h1 style={{ fontSize: '28px', fontWeight: '900', color: '#000', marginBottom: '5px' }}>RS DETAILING</h1>
+                                        <p style={{ color: '#666', fontSize: '14px', marginBottom: '5px' }}>Lavage & Esthétique Auto</p>
+                                        <p style={{ color: '#666', fontSize: '14px' }}>أم البواقي - بجانب وقف السبتي</p>
                                     </div>
-                                )}
-                            </div>
-
-                            <div className="services">
-                                <h3>الخدمات المقدمة:</h3>
-                                {selectedInvoice.services.map((svc, i) => (
-                                    <div key={i} className="service-item">
-                                        <span>{svc}</span>
-                                        <span>✓</span>
+                                    <div className="logo">
+                                        <img src="/logo.png" alt="RS Detailing" style={{ width: '120px', height: 'auto' }} />
                                     </div>
-                                ))}
-                            </div>
+                                </div>
 
-                            <div className="total">
-                                <div className="total-row">
-                                    <span>المجموع الكلي:</span>
-                                    <span>{selectedInvoice.total_price.toLocaleString()} DA</span>
+                                <div className="invoice-details" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px' }}>
+                                    <div className="client-info" style={{ flex: 1 }}>
+                                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: '#DC2626' }}>معلومات الزبون:</h3>
+                                        <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#333' }}>
+                                            <p><strong>الاسم:</strong> {selectedInvoice.customer?.full_name || 'زبون'}</p>
+                                            <p><strong>الهاتف:</strong> {selectedInvoice.customer?.phone || '-'}</p>
+                                            <p><strong>السيارة:</strong> {selectedInvoice.car?.make} {selectedInvoice.car?.model}</p>
+                                            <p><strong>اللوحة:</strong> {selectedInvoice.car?.plate_number || '-'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="meta-info" style={{ flex: 1, textAlign: 'left' }}>
+                                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: '#DC2626' }}>تفاصيل الفاتورة:</h3>
+                                        <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#333' }}>
+                                            <p><strong>رقم الفاتورة:</strong> {formatInvoiceId(selectedInvoice.id)}</p>
+                                            <p><strong>التاريخ:</strong> {formatDate(selectedInvoice.created_at)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="services-table" style={{ marginBottom: '40px' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ background: '#f9f9f9', borderBottom: '2px solid #000' }}>
+                                                <th style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>وصف الخدمة</th>
+                                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', width: '100px' }}>المبلغ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {selectedInvoice.services.map((svc, i) => (
+                                                <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px' }}>{svc}</td>
+                                                    <td style={{ padding: '12px', textAlign: 'left', color: '#666' }}>-</td>
+                                                </tr>
+                                            ))}
+                                            <tr style={{ background: '#DC2626', color: 'white' }}>
+                                                <td style={{ padding: '15px', fontWeight: 'bold', fontSize: '18px' }}>المجموع الكلي</td>
+                                                <td style={{ padding: '15px', textAlign: 'left', fontWeight: 'bold', fontSize: '18px' }}>
+                                                    {selectedInvoice.total_price.toLocaleString()} DA
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="footer" style={{ marginTop: '60px', textAlign: 'center', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+                                    <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>شكراً لثقتكم بنا!</p>
+                                    <p style={{ color: '#666', fontSize: '12px' }}>RS Detailing - أم البواقي - هاتف: 0662272721</p>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="footer">
-                                <p>شكراً لزيارتكم - Merci de votre visite</p>
-                                <p style={{ marginTop: '5px' }}>📞 06 62 27 27 21</p>
-                            </div>
+                        {/* Visual Preview (Visible to User) */}
+                        <div className="border border-gray-200 rounded-lg p-6 mb-6 bg-gray-50 flex flex-col items-center justify-center text-center">
+                            <img src="/logo.png" alt="Logo" className="h-16 mb-4" />
+                            <h2 className="text-xl font-bold mb-2">معاينة الفاتورة</h2>
+                            <p className="text-gray-500 mb-4">{formatInvoiceId(selectedInvoice.id)}</p>
+                            <p className="font-bold text-2xl text-brand-red">{selectedInvoice.total_price.toLocaleString()} DA</p>
                         </div>
 
                         {/* Print Button */}
