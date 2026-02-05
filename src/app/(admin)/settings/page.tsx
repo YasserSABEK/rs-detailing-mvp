@@ -270,7 +270,13 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-gray-900">قائمة الخدمات</h2>
                         <button
-                            onClick={() => { setIsAddingService(true); setEditingServiceId(null); resetServiceForm(); }}
+                            onClick={() => {
+                                setServiceName('');
+                                setServicePrice('');
+                                setServiceDuration('');
+                                setEditingServiceId(null);
+                                setIsAddingService(true);
+                            }}
                             className="flex items-center gap-2 rounded-xl bg-brand-red px-4 py-2 font-bold text-white hover:bg-red-700"
                         >
                             <Plus className="h-4 w-4" />
